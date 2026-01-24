@@ -12,8 +12,8 @@ device = torch.device("cuda")
 model = DepthAnything3.from_pretrained("depth-anything/DA3NESTED-GIANT-LARGE")
 model = model.to(device=device)
 
-example_path = "/app/data/datasets/kitti/data_odometry_color/sequences/01/image_2/"
-# example_path = "./assets/examples/SOH"
+# example_path = "/app/data/datasets/kitti/data_odometry_color/sequences/01/image_2/"
+example_path = "./assets/examples/SOH"
 images = sorted(glob.glob(os.path.join(example_path, "*.png")))
 images = images[:50]  # take only first 50 images
 
@@ -23,7 +23,7 @@ print(f"{len(images)} image/s found")
 # infer
 prediction = model.inference(
     images,  # type: ignore
-    export_dir='assets/output',
+    export_dir='assets/test',
     export_format='glb-npz'
 
 )

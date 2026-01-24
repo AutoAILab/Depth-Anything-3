@@ -50,11 +50,12 @@ def save_kitti_odometry(extrinsics, output_path):
 def main():
     parser = argparse.ArgumentParser(description="Get camera poses from a set of images using Depth Anything 3.")
     parser.add_argument("image_dir", type=str, help="Directory containing input images.")
-    parser.add_argument("output_dir", type=str, help="Directory to save the output poses (poses_kitti.txt).")
+    parser.add_argument("output_dir", type=str, help="Directory to save the output.")
     parser.add_argument("--model", type=str, default="depth-anything/DA3-LARGE-1.1", help="Model name to use.")
     parser.add_argument("--use_ray_pose", action="store_true", default=True, help="Use ray-based xpose estimation (more accurate).")
     parser.add_argument("--max_images", type=int, default=-1, help="Maximum number of images to process (-1 for all).")
     parser.add_argument("--stride", type=int, default=1, help="Stride for sampling images (e.g., 2 to process every second image).")
+    parser.add_argument("--export_format", type=str, default=None, help="Export format (e.g., 'glb').")
     
     args = parser.parse_args()
 
@@ -81,7 +82,12 @@ def main():
     print(f"Processing {len(image_paths)} images from {args.image_dir}...")
 
     # 3. Run inference
-    prediction = model.inference(image_paths, use_ray_pose=args.use_ray_pose)
+    prediction = model.inference(
+        image_paths, 
+        use_ray_pose=args.use_ray_pose,
+        export_dir=args.output_dir,
+        export_format=args.export_format
+    )
 
     # 4. Extract and save the poses
     extrinsics = prediction.extrinsics # (N, 4, 4) or (N, 3, 4)
@@ -92,6 +98,7 @@ def main():
         
     output_file = os.path.join(args.output_dir, "poses_kitti.txt")
     save_kitti_odometry(extrinsics, output_file)
+
 
     print(f"Extrinsics shape: {extrinsics.shape}")
     print(f"Intrinsics shape: {prediction.intrinsics.shape}")

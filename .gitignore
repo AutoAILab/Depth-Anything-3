@@ -38,4 +38,5 @@ temp*.png
 output_poses/
 scripts/assets/
 .tickets/
+.complete/
 assets/output/
