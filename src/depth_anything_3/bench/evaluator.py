@@ -135,7 +135,21 @@ class Evaluator:
         """Get list of scenes to evaluate, optionally filtered."""
         all_scenes = dataset.SCENES
         if self.scenes_filter:
-            scenes = [s for s in all_scenes if s in self.scenes_filter]
+            # Convert filter to set of strings for robust comparison
+            filter_set = {str(s) for s in self.scenes_filter}
+            
+            scenes = []
+            for s in all_scenes:
+                s_str = str(s)
+                # Direct match (e.g., "00" == "00")
+                if s_str in filter_set:
+                    scenes.append(s)
+                # Numeric match (e.g., "00" matches 0 or "0")
+                elif s_str.isdigit():
+                    s_int_str = str(int(s_str))
+                    if s_int_str in filter_set:
+                        scenes.append(s)
+            
             if self.debug:
                 print(f"[DEBUG] Filtered scenes: {scenes} (from {len(all_scenes)} total)")
             return scenes
@@ -705,7 +719,8 @@ Examples:
             base_cmd += [f"eval.datasets=[{','.join(datasets)}]"]
             base_cmd += [f"eval.modes=[{','.join(modes)}]"]
             if scenes:
-                base_cmd += [f"eval.scenes=[{','.join(scenes)}]"]
+                scenes_str = [str(s) for s in scenes]
+                base_cmd += [f"eval.scenes=[{','.join(scenes_str)}]"]
             base_cmd += [f"eval.max_frames={max_frames}"]
             base_cmd += [f"eval.ref_view_strategy={ref_view_strategy}"]
             base_cmd += [f"inference.debug={str(debug).lower()}"]

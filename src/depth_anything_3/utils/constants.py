@@ -268,3 +268,29 @@ HIROOM_SAMPLING_NUMBER = 1_000_000  # Number of points to sample from mesh
 # 3D reconstruction evaluation hyperparameters
 HIROOM_EVAL_THRESHOLD = 0.05  # Distance threshold for precision/recall (meters)
 HIROOM_DOWN_SAMPLE = 4.0 / 512.0  # Voxel size for evaluation downsampling (meters)
+# ==============================================================================
+# KITTI Dataset Configuration
+# ==============================================================================
+# Reference: http://www.cvlibs.net/datasets/kitti/eval_odometry.php
+# Note: KITTI Odometry dataset with ground truth poses and LiDAR-based geometry.
+
+# Root directories for KITTI evaluation data
+KITTI_DATA_ROOT = "/home/df/data/datasets/kitti/data_odometry_color"
+KITTI_POSE_ROOT = "/home/df/data/datasets/kitti/data_odometry_poses"
+
+# List of KITTI Odometry sequences with ground truth (00-10)
+KITTI_SCENES = [
+    "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10"
+]
+
+# TSDF fusion hyperparameters (outdoor scenes, larger voxels)
+KITTI_VOXEL_LENGTH = 0.2  # Voxel size for TSDF (meters)
+KITTI_SDF_TRUNC = 0.6  # SDF truncation distance (meters)
+KITTI_MAX_DEPTH = 80.0  # Maximum depth for integration (meters)
+
+# Point cloud sampling
+KITTI_SAMPLING_NUMBER = 1_000_000  # Number of points to sample from mesh
+
+# 3D reconstruction evaluation hyperparameters
+KITTI_EVAL_THRESHOLD = 0.5  # Distance threshold for precision/recall (meters)
+KITTI_DOWN_SAMPLE = 0.2  # Voxel size for evaluation downsampling (meters)

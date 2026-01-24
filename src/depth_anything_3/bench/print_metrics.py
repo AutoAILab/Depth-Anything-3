@@ -356,7 +356,7 @@ class MetricsPrinter:
         print(f"{Colors.BOLD_CYAN}{'=' * 120}{Colors.RESET}")
 
         # Dataset display order and names
-        DATASET_ORDER = ["hiroom", "eth3d", "dtu", "7scenes", "scannetpp", "dtu64"]
+        DATASET_ORDER = ["hiroom", "eth3d", "dtu", "7scenes", "scannetpp", "dtu64", "kitti"]
         DATASET_DISPLAY = {
             "hiroom": "HiRoom",
             "eth3d": "ETH3D",
@@ -364,6 +364,7 @@ class MetricsPrinter:
             "7scenes": "7Scenes",
             "scannetpp": "ScanNet++",
             "dtu64": "DTU-64",
+            "kitti": "KITTI",
         }
 
         # Collect all metrics into a structured dict
@@ -401,8 +402,8 @@ class MetricsPrinter:
         print(f"\n{Colors.BOLD_MAGENTA}🎯 POSE ESTIMATION{Colors.RESET}")
         
         # Pose: show all datasets except DTU (keep DTU-64 only)
-        # Order: HiRoom, ETH3D, DTU-64, 7Scenes, ScanNet++
-        pose_datasets = ["hiroom", "eth3d", "dtu64", "7scenes", "scannetpp"]
+        # Order: HiRoom, ETH3D, DTU-64, 7Scenes, ScanNet++, KITTI
+        pose_datasets = ["hiroom", "eth3d", "dtu64", "7scenes", "scannetpp", "kitti"]
         
         # Header: Avg first, then datasets
         header = f"{'Metric':<15}{'Avg':<{col_width}}"
@@ -456,7 +457,7 @@ class MetricsPrinter:
         print(f"\n{Colors.BOLD_MAGENTA}🏗️  RECON_UNPOSED (Pred Pose){Colors.RESET}")
         
         # For recon, exclude dtu64 from columns
-        recon_datasets = ["hiroom", "eth3d", "dtu", "7scenes", "scannetpp"]
+        recon_datasets = ["hiroom", "eth3d", "dtu", "7scenes", "scannetpp", "kitti"]
         avg_datasets = ["hiroom", "eth3d", "7scenes", "scannetpp"]  # Exclude DTU from avg
         
         # Header: Avg first, then datasets
