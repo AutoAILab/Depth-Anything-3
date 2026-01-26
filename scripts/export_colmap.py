@@ -68,5 +68,5 @@ def main(scene_path):
 
 if __name__ == "__main__":
     # Example for KITTI sequence 00
-    scene_dir = "workspace/evaluation/model_results/kitti/00/unposed"
+    scene_dir = "workspace/evaluation/model_results/kitti/04/unposed"
     main(scene_dir)

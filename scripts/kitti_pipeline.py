@@ -66,7 +66,19 @@ def main():
         "--plot",
         "--output_plot", str(output_path / "pose_auc30.png")
     ]
+    
+    traj_cmd = [
+        "python3", "scripts/trajectory.py",
+        "--gt", str(gt_file),
+        "--est", str(pred_file),
+        "--out_dir", str(output_path)
+        
+    ]
+    
     run_command(eval_cmd)
+    run_command(traj_cmd)
+    
+    
 
     print(f"\nPipeline execution completed for sequence {args.sequence}")
     print(f"Results located in: {output_path}")
