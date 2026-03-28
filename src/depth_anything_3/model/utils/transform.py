@@ -141,9 +141,18 @@ def mat_to_quat(matrix: torch.Tensor) -> torch.Tensor:
     flr = torch.tensor(0.1).to(dtype=q_abs.dtype, device=q_abs.device)
     quat_candidates = quat_by_rijk / (2.0 * q_abs[..., None].max(flr))
 
-    out = quat_candidates[F.one_hot(q_abs.argmax(dim=-1), num_classes=4) > 0.5, :].reshape(
-        batch_dim + (4,)
-    )
+    # Optimization: Use argmax and direct indexing instead of one_hot + masking
+    # This is more memory-efficient for very large batches.
+    argmax_indices = q_abs.argmax(dim=-1)
+    
+    # quat_candidates is (..., 4, 4), argmax_indices is (...)
+    # We want to pick the candidate corresponding to the max q_abs
+    # Flatten to simplify indexing
+    quat_candidates_flat = quat_candidates.reshape(-1, 4, 4)
+    argmax_indices_flat = argmax_indices.reshape(-1)
+    
+    out = quat_candidates_flat[torch.arange(quat_candidates_flat.size(0), device=q_abs.device), argmax_indices_flat]
+    out = out.reshape(batch_dim + (4,))
 
     out = out[..., [1, 2, 3, 0]]
 
@@ -181,7 +190,7 @@ def standardize_quaternion(quaternions: torch.Tensor) -> torch.Tensor:
     return torch.where(quaternions[..., 3:4] < 0, -quaternions, quaternions)
 
 
-def cam_quat_xyzw_to_world_quat_wxyz(cam_quat_xyzw, c2w):
+def cam_quat_xyzw_to_world_quat_wxyz(cam_quat_xyzw, c2w, chunk_size: int = 1000000):
     # cam_quat_xyzw: (b, n, 4) in xyzw
     # c2w: (b, n, 4, 4)
     b, n = cam_quat_xyzw.shape[:2]
@@ -201,8 +210,17 @@ def cam_quat_xyzw_to_world_quat_wxyz(cam_quat_xyzw, c2w):
     # 3. Transform to world space
     rotmat_c2w = c2w[..., :3, :3]
     rotmat_world = torch.matmul(rotmat_c2w, rotmat_cam)
-    # 4. Matrix to quaternion (wxyz)
+    # 4. Matrix to quaternion (wxyz) - with chunking to avoid OOM
     rotmat_world_flat = rotmat_world.reshape(-1, 3, 3)
-    world_quat_wxyz_flat = mat_to_quat(rotmat_world_flat)
+    
+    num_mats = rotmat_world_flat.size(0)
+    world_quat_wxyz_list = []
+    
+    for i in range(0, num_mats, chunk_size):
+        end = min(i + chunk_size, num_mats)
+        chunk = rotmat_world_flat[i:end]
+        world_quat_wxyz_list.append(mat_to_quat(chunk))
+    
+    world_quat_wxyz_flat = torch.cat(world_quat_wxyz_list, dim=0)
     world_quat_wxyz = world_quat_wxyz_flat.reshape(b, n, 4)
     return world_quat_wxyz

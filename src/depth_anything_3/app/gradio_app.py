@@ -220,7 +220,7 @@ class DepthAnything3App:
                                 ) = self.ui_components.create_measure_section()
 
                             with gr.Tab("3DGS Rendered Novel Views"):
-                                gs_video, gs_info = self.ui_components.create_nvs_video()
+                                gs_video, gs_info, gs_download = self.ui_components.create_nvs_video()
 
                         # Inference control section (before inference)
                         (process_res_method_dropdown, infer_gs, ref_view_strategy_dropdown) = (
@@ -244,12 +244,11 @@ class DepthAnything3App:
                         infer_gs.change(
                             fn=lambda checked: (
                                 gr.update(visible=checked),
-                                gr.update(visible=checked),
-                                gr.update(visible=checked),
-                                gr.update(visible=(not checked)),
+                                gs_download,
+                                gs_info,
                             ),
                             inputs=infer_gs,
-                            outputs=[gs_trj_mode, gs_video_quality, gs_video, gs_info],
+                            outputs=[gs_trj_mode, gs_video_quality, gs_video, gs_download, gs_info],
                         )
 
             # Example scenes section
@@ -291,6 +290,7 @@ class DepthAnything3App:
                 scenes,
                 scene_components,
                 gs_video,
+                gs_download,
                 gs_info,
                 gs_trj_mode,
                 gs_video_quality,
@@ -334,6 +334,7 @@ class DepthAnything3App:
         scenes: List[Dict[str, Any]],
         scene_components: List[gr.Image],
         gs_video: gr.Video,
+        gs_download: gr.File,
         gs_info: gr.Markdown,
         gs_trj_mode: gr.Dropdown,
         gs_video_quality: gr.Dropdown,
@@ -386,7 +387,8 @@ class DepthAnything3App:
                 measure_text,
                 measure_view_selector,
                 gs_video,
-                gs_video,  # gs_video visibility
+                gs_download,  # gs_download visibility
+                gs_download,  # gs_download value
                 gs_info,  # gs_info visibility
             ],
         ).then(
@@ -451,6 +453,7 @@ class DepthAnything3App:
             measure_image,
             measure_depth_image,
             gs_video,
+            gs_download,
             gs_info,
         )
 

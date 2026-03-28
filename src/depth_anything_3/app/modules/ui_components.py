@@ -106,7 +106,12 @@ class UIComponents:
                 interactive=False,
                 visible=False,
             )
-        return gs_video, gs_info
+            gs_download = gr.File(
+                label="Download 3DGS (.ply)",
+                visible=False,
+                interactive=False,
+            )
+        return gs_video, gs_info, gs_download
 
     def create_depth_section(self) -> Tuple[gr.Button, gr.Dropdown, gr.Button, gr.Image]:
         """

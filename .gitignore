@@ -36,6 +36,7 @@ temp*.png
 
 # output files
 output_poses/
+output/
 scripts/assets/
 .tickets/
 .complete/

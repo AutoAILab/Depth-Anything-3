@@ -799,5 +799,27 @@ def gallery(
         raise typer.Exit(1)
 
 
+@app.command()
+def data_gui(
+    output_dir: str = typer.Option("output", help="Output directory containing results"),
+    share: bool = typer.Option(False, help="Create a public link for the app"),
+):
+    """Launch Depth Anything 3 Data Visualization GUI"""
+    from depth_anything_3.app.data_gui import DataAnything3DataApp
+
+    typer.echo(f"Launching Depth Anything 3 Data Viewer...")
+    typer.echo(f"Output directory: {output_dir}")
+    typer.echo(f"Share: {share}")
+
+    try:
+        app = DataAnything3DataApp(output_dir=output_dir)
+        app.create_app().launch(share=share)
+    except KeyboardInterrupt:
+        typer.echo("\nData Viewer stopped.")
+    except Exception as e:
+        typer.echo(f"Failed to launch Data Viewer: {e}")
+        raise typer.Exit(1)
+
+
 if __name__ == "__main__":
     app()
